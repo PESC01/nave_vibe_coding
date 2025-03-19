@@ -20,6 +20,12 @@ let scores = {}; // Puntuaciones de los jugadores
 // Eventos del teclado
 window.addEventListener('keydown', (event) => {
     keys[event.code] = true;
+
+    // Prevenir el comportamiento por defecto para las teclas de control del juego
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(event.code)) {
+        event.preventDefault();
+    }
+
     if (event.code === 'Space' && currentPlayer) {
         fireProjectile();
     }
@@ -27,6 +33,11 @@ window.addEventListener('keydown', (event) => {
 
 window.addEventListener('keyup', (event) => {
     keys[event.code] = false;
+
+    // También prevenir comportamiento por defecto aquí
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(event.code)) {
+        event.preventDefault();
+    }
 });
 
 // Función para disparar proyectil
