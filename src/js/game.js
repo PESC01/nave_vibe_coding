@@ -9,8 +9,12 @@ document.addEventListener('keydown', function (e) {
     }
 }, { passive: false, capture: true });
 
-// Conexión a Socket.io
-const socket = io();
+const socket = io({
+    transports: ['polling'],
+    upgrade: false, // evitar intentar actualizar a WebSockets
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000
+});
 
 // Referencias al canvas
 const canvas = document.getElementById('gameCanvas');

@@ -1,3 +1,4 @@
+
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -5,10 +6,25 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+
+// Configuración especial para Socket.IO en Vercel
+const io = socketIo(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["content-type"]
+    },
+    // Usar solo polling para evitar problemas con WebSockets en Vercel
+    transports: ['polling']
+});
 
 // Servir archivos estáticos desde la carpeta src
 app.use(express.static(path.join(__dirname, 'src')));
+
+// Ruta de verificación de estado
+app.get('/api/health', (req, res) => {
+    res.status(200).send('OK');
+});
 
 // Almacenar información de jugadores
 const players = {};
@@ -26,37 +42,28 @@ io.on('connection', (socket) => {
         score: 0
     };
 
-    // Enviar info de jugador actual
+    // Resto del código de conexión
+    // ...
+
+    // Código existente sin cambios
     socket.emit('currentPlayer', players[socket.id]);
-
-    // Enviar info de jugadores existentes al nuevo jugador
     socket.emit('existingPlayers', players);
-
-    // Notificar a otros jugadores sobre el nuevo jugador
     socket.broadcast.emit('newPlayer', players[socket.id]);
 
-    // Actualizar posición y rotación del jugador
     socket.on('playerMovement', (movementData) => {
         players[socket.id].x = movementData.x;
         players[socket.id].y = movementData.y;
         players[socket.id].rotation = movementData.rotation;
-
-        // Emitir el movimiento a otros jugadores
         socket.broadcast.emit('playerMoved', players[socket.id]);
     });
 
-    // Manejar disparos
     socket.on('playerShoot', (bulletData) => {
-        // Añadir ID del jugador que dispara
         bulletData.playerId = socket.id;
-        // Emitir a todos incluyendo al emisor
         io.emit('bulletCreated', bulletData);
     });
 
-    // Cuando un jugador golpea a otro
     socket.on('playerHit', ({ hitPlayerId, bulletOwner, hitInBack }) => {
         if (hitInBack && players[hitPlayerId]) {
-            // Solo registrar golpe si es en la parte trasera
             players[hitPlayerId].score -= 10;
 
             if (players[bulletOwner]) {
@@ -71,7 +78,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Desconexión del jugador
     socket.on('disconnect', () => {
         console.log('Jugador desconectado:', socket.id);
         delete players[socket.id];
@@ -79,7 +85,11 @@ io.on('connection', (socket) => {
     });
 });
 
+// Para desarrollo local
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Servidor escuchando en puerto ${PORT}`);
 });
+
+// Para Vercel - necesario exportar la app
+module.exports = app;
