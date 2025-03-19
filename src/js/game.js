@@ -1,6 +1,14 @@
 import Ship from './ship.js';
 import Projectile from './projectiles.js';
 
+document.addEventListener('keydown', function (e) {
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+        'KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(e.code)) {
+        e.preventDefault();
+        return false;
+    }
+}, { passive: false, capture: true });
+
 // Conexión a Socket.io
 const socket = io();
 
