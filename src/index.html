@@ -1,4 +1,4 @@
-
+html -->
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -15,6 +15,8 @@
                 }
             }, {passive: false});
         </script>
+        <!-- Reemplazar la referencia a socket.io local por CDN -->
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     </head>
 <body>
     <div id="game-container">
@@ -30,7 +32,8 @@
         </div>
     </div>
     
-    <script src="/socket.io/socket.io.js"></script>
+    <!-- Eliminamos la referencia local a socket.io.js -->
+    <!-- <script src="/socket.io/socket.io.js"></script> -->
     <script type="module" src="js/game.js"></script>
 </body>
 </html>

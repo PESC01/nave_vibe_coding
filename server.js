@@ -11,11 +11,13 @@ const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
         origin: "*",
-        methods: ["GET", "POST"],
-        allowedHeaders: ["content-type"]
+        methods: ["GET", "POST", "OPTIONS"],
+        allowedHeaders: ["content-type", "Authorization"],
+        credentials: true
     },
     // Usar solo polling para evitar problemas con WebSockets en Vercel
-    transports: ['polling']
+    transports: ['polling'],
+    allowEIO3: true // Permitir compatibilidad con versiones anteriores
 });
 
 // Servir archivos estáticos desde la carpeta src

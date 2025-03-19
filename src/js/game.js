@@ -9,13 +9,14 @@ document.addEventListener('keydown', function (e) {
     }
 }, { passive: false, capture: true });
 
-const socket = io({
+// Conectar a la URL completa en lugar de confiar en la conexión automática
+const socket = io("https://nave-vibe-coding.vercel.app", {
     transports: ['polling'],
-    upgrade: false, // evitar intentar actualizar a WebSockets
+    upgrade: false,
     reconnectionAttempts: 5,
-    reconnectionDelay: 1000
+    reconnectionDelay: 1000,
+    forceNew: true
 });
-
 // Referencias al canvas
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
